@@ -31,8 +31,13 @@ vi.mock('@/lib/api-auth', () => {
   }
 })
 
+const billingMock = vi.hoisted(() => ({
+  getBillingMode: vi.fn(async () => 'OFF' as 'OFF' | 'SHADOW' | 'ENFORCE'),
+}))
+
 vi.mock('@/lib/logging/file-writer', () => loggingMock)
 vi.mock('@/lib/storage', () => storageMock)
+vi.mock('@/lib/billing/mode', () => billingMock)
 
 describe('api contract - infra routes (behavior)', () => {
   const routes = ROUTE_CATALOG.filter((entry) => entry.contractGroup === 'infra-routes')
@@ -76,6 +81,7 @@ describe('api contract - infra routes (behavior)', () => {
       'src/app/api/cos/image/route.ts',
       'src/app/api/files/[...path]/route.ts',
       'src/app/api/storage/sign/route.ts',
+      'src/app/api/system/billing-mode/route.ts',
       'src/app/api/system/boot-id/route.ts',
     ]))
   })
@@ -106,7 +112,7 @@ describe('api contract - infra routes (behavior)', () => {
     expect(res.status).toBe(200)
     expect(text).toContain('worker log line 1')
     expect(res.headers.get('content-type')).toBe('text/plain; charset=utf-8')
-    expect(res.headers.get('content-disposition')).toMatch(/^attachment; filename="waoowaoo-logs-/)
+    expect(res.headers.get('content-disposition')).toMatch(/^attachment; filename="quying-logs-/)
   })
 
   it('GET /api/cos/image redirects to signed storage route with normalized query', async () => {
@@ -134,6 +140,25 @@ describe('api contract - infra routes (behavior)', () => {
     expect(storageMock.getSignedObjectUrl).toHaveBeenCalledWith('folder/a.png', 3600)
     expect(res.status).toBe(307)
     expect(res.headers.get('location')).toBe('https://signed.example/folder/a.png?expires=3600')
+  })
+
+  it('GET /api/system/billing-mode rejects unauthenticated requests', async () => {
+    const mod = await import('@/app/api/system/billing-mode/route')
+    const req = buildMockRequest({ path: '/api/system/billing-mode', method: 'GET' })
+    const res = await mod.GET(req, { params: Promise.resolve({}) })
+    expect(res.status).toBe(401)
+    expect(billingMock.getBillingMode).not.toHaveBeenCalled()
+  })
+
+  it('GET /api/system/billing-mode returns the current billing mode for authenticated users', async () => {
+    authState.authenticated = true
+    billingMock.getBillingMode.mockResolvedValueOnce('SHADOW')
+    const mod = await import('@/app/api/system/billing-mode/route')
+    const req = buildMockRequest({ path: '/api/system/billing-mode', method: 'GET' })
+    const res = await mod.GET(req, { params: Promise.resolve({}) })
+    const json = await res.json() as { mode: string }
+    expect(res.status).toBe(200)
+    expect(json.mode).toBe('SHADOW')
   })
 
   it('GET /api/system/boot-id returns the current server boot id', async () => {

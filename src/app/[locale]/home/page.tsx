@@ -352,7 +352,13 @@ export default function HomePage() {
                 href={{ pathname: `/workspace/${project.id}` }}
                 className="glass-surface cursor-pointer group hover:border-[var(--glass-tone-info-fg)]/40 transition-all duration-300 overflow-hidden relative block"
               >
-                <div className="absolute inset-0 rounded-[inherit] bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div
+                  className="absolute inset-0 rounded-[inherit] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{
+                    backgroundImage:
+                      'linear-gradient(135deg, rgba(255,106,61,0.08) 0%, rgba(47,74,63,0.06) 100%)',
+                  }}
+                />
                 <div className="p-5 relative z-10">
                   <h3 className="text-sm font-bold text-[var(--glass-text-primary)] mb-2 group-hover:text-[var(--glass-tone-info-fg)] transition-colors line-clamp-1">
                     {project.name}
@@ -369,7 +375,10 @@ export default function HomePage() {
                     <div className="flex items-center gap-2 mb-3">
                       <IconGradientDefs className="w-0 h-0 absolute" aria-hidden="true" />
                       <AppIcon name="statsBarGradient" className="w-4 h-4 flex-shrink-0" />
-                      <div className="flex items-center gap-3 text-sm font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                      <div
+                        className="flex items-center gap-3 text-sm font-semibold bg-clip-text text-transparent"
+                        style={{ backgroundImage: 'linear-gradient(90deg, #FF6A3D 0%, #2F4A3F 100%)' }}
+                      >
                         {project.stats.episodes > 0 && (
                           <span className="flex items-center gap-1">
                             <AppIcon name="statsEpisodeGradient" className="w-3.5 h-3.5" />

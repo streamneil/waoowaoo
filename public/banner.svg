@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" fill="none">
+  <!-- Backdrop: paper canvas with warm sunset gradient -->
+  <rect width="1200" height="480" fill="#F5F1EA"/>
+  <ellipse cx="180" cy="80" rx="520" ry="280" fill="url(#sunset)" opacity="0.6"/>
+  <ellipse cx="1080" cy="420" rx="420" ry="220" fill="url(#filmGreen)" opacity="0.4"/>
+
+  <!-- Top filmstrip decor -->
+  <g transform="translate(0, 12)">
+    <rect width="1200" height="32" fill="#1A1A1F"/>
+    <g fill="#F5F1EA">
+      <rect x="20" y="9" width="14" height="14" rx="2"/>
+      <rect x="60" y="9" width="14" height="14" rx="2"/>
+      <rect x="100" y="9" width="14" height="14" rx="2"/>
+      <rect x="140" y="9" width="14" height="14" rx="2"/>
+      <rect x="180" y="9" width="14" height="14" rx="2"/>
+      <rect x="220" y="9" width="14" height="14" rx="2"/>
+      <rect x="260" y="9" width="14" height="14" rx="2"/>
+      <rect x="300" y="9" width="14" height="14" rx="2"/>
+      <rect x="340" y="9" width="14" height="14" rx="2"/>
+      <rect x="380" y="9" width="14" height="14" rx="2"/>
+      <rect x="420" y="9" width="14" height="14" rx="2"/>
+      <rect x="460" y="9" width="14" height="14" rx="2"/>
+      <rect x="500" y="9" width="14" height="14" rx="2"/>
+      <rect x="540" y="9" width="14" height="14" rx="2"/>
+      <rect x="580" y="9" width="14" height="14" rx="2"/>
+      <rect x="620" y="9" width="14" height="14" rx="2"/>
+      <rect x="660" y="9" width="14" height="14" rx="2"/>
+      <rect x="700" y="9" width="14" height="14" rx="2"/>
+      <rect x="740" y="9" width="14" height="14" rx="2"/>
+      <rect x="780" y="9" width="14" height="14" rx="2"/>
+      <rect x="820" y="9" width="14" height="14" rx="2"/>
+      <rect x="860" y="9" width="14" height="14" rx="2"/>
+      <rect x="900" y="9" width="14" height="14" rx="2"/>
+      <rect x="940" y="9" width="14" height="14" rx="2"/>
+      <rect x="980" y="9" width="14" height="14" rx="2"/>
+      <rect x="1020" y="9" width="14" height="14" rx="2"/>
+      <rect x="1060" y="9" width="14" height="14" rx="2"/>
+      <rect x="1100" y="9" width="14" height="14" rx="2"/>
+      <rect x="1140" y="9" width="14" height="14" rx="2"/>
+      <rect x="1180" y="9" width="14" height="14" rx="2"/>
+    </g>
+  </g>
+
+  <!-- Bottom filmstrip decor (mirrored) -->
+  <g transform="translate(0, 436)">
+    <rect width="1200" height="32" fill="#1A1A1F"/>
+    <g fill="#F5F1EA">
+      <rect x="20" y="9" width="14" height="14" rx="2"/>
+      <rect x="60" y="9" width="14" height="14" rx="2"/>
+      <rect x="100" y="9" width="14" height="14" rx="2"/>
+      <rect x="140" y="9" width="14" height="14" rx="2"/>
+      <rect x="180" y="9" width="14" height="14" rx="2"/>
+      <rect x="220" y="9" width="14" height="14" rx="2"/>
+      <rect x="260" y="9" width="14" height="14" rx="2"/>
+      <rect x="300" y="9" width="14" height="14" rx="2"/>
+      <rect x="340" y="9" width="14" height="14" rx="2"/>
+      <rect x="380" y="9" width="14" height="14" rx="2"/>
+      <rect x="420" y="9" width="14" height="14" rx="2"/>
+      <rect x="460" y="9" width="14" height="14" rx="2"/>
+      <rect x="500" y="9" width="14" height="14" rx="2"/>
+      <rect x="540" y="9" width="14" height="14" rx="2"/>
+      <rect x="580" y="9" width="14" height="14" rx="2"/>
+      <rect x="620" y="9" width="14" height="14" rx="2"/>
+      <rect x="660" y="9" width="14" height="14" rx="2"/>
+      <rect x="700" y="9" width="14" height="14" rx="2"/>
+      <rect x="740" y="9" width="14" height="14" rx="2"/>
+      <rect x="780" y="9" width="14" height="14" rx="2"/>
+      <rect x="820" y="9" width="14" height="14" rx="2"/>
+      <rect x="860" y="9" width="14" height="14" rx="2"/>
+      <rect x="900" y="9" width="14" height="14" rx="2"/>
+      <rect x="940" y="9" width="14" height="14" rx="2"/>
+      <rect x="980" y="9" width="14" height="14" rx="2"/>
+      <rect x="1020" y="9" width="14" height="14" rx="2"/>
+      <rect x="1060" y="9" width="14" height="14" rx="2"/>
+      <rect x="1100" y="9" width="14" height="14" rx="2"/>
+      <rect x="1140" y="9" width="14" height="14" rx="2"/>
+      <rect x="1180" y="9" width="14" height="14" rx="2"/>
+    </g>
+  </g>
+
+  <!-- Hero text -->
+  <g transform="translate(120, 188)">
+    <text font-family="'Source Han Serif SC','Songti SC','SimSun','Noto Serif CJK SC',serif" font-weight="900" font-size="120" fill="#1A1A1F">趣影</text>
+    <text x="0" y="56" font-family="'Geist Sans','Inter',system-ui,sans-serif" font-weight="600" font-size="32" fill="#454650" letter-spacing="3">QUYING · AI CINEMATIC STUDIO</text>
+    <rect x="0" y="84" width="80" height="6" rx="3" fill="#FF6A3D"/>
+    <text x="100" y="94" font-family="'Geist Sans','Inter',system-ui,sans-serif" font-weight="500" font-size="22" fill="#7A7A85">用一句话，拍一部片</text>
+  </g>
+
+  <defs>
+    <linearGradient id="sunset" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#FF6A3D" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#FF6A3D" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="filmGreen" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#2F4A3F" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#2F4A3F" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>

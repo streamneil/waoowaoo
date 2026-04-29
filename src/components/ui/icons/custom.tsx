@@ -621,11 +621,14 @@ export const IconGradientDefs = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement
   return (
     <svg ref={ref} {...props}>
       <defs>
-                                <linearGradient id="icon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                  <stop offset="0%" stopColor="#3b82f6" />
-                                  <stop offset="100%" stopColor="#06b6d4" />
-                                </linearGradient>
-                              </defs>
+        {/* QuYing brand gradient: sunset orange → film green
+            Single source for all stats icons (statsBarGradient, statsEpisodeGradient,
+            statsImageGradient, statsVideoGradient). */}
+        <linearGradient id="icon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FF6A3D" />
+          <stop offset="100%" stopColor="#2F4A3F" />
+        </linearGradient>
+      </defs>
     </svg>
   )
 })

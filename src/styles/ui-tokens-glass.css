@@ -1,44 +1,131 @@
+/*
+ * 趣影 (QuYing) Design Tokens
+ *
+ * Authoritative source: --qy-*
+ * Compatibility aliases: --glass-* (kept so existing components consume the new palette
+ * without code changes). Do NOT add new --glass-* tokens — extend --qy-* and alias instead.
+ */
+
 :root {
+  /* ============== QuYing primary palette ============== */
+  /* Surfaces — paper/film stock */
+  --qy-canvas: #f5f1ea;          /* mì-paper */
+  --qy-surface: rgba(255, 252, 246, 0.95);
+  --qy-surface-strong: rgba(255, 252, 246, 0.99);
+  --qy-surface-modal: #fffcf6;
+  --qy-surface-muted: rgba(245, 241, 234, 0.88);
+  --qy-surface-nav: rgba(255, 252, 246, 0.92);
+
+  /* Ink — text */
+  --qy-ink-primary: #1a1a1f;     /* film black */
+  --qy-ink-secondary: #454650;
+  --qy-ink-tertiary: #7a7a85;
+  --qy-ink-on-accent: #ffffff;
+
+  /* Accent — sunset orange (brand identity color) */
+  --qy-accent: #ff6a3d;
+  --qy-accent-hi: #ff8b66;
+  --qy-accent-lo: #e0552a;
+  --qy-accent-soft: #ffe4d6;
+  --qy-accent-shadow-soft: rgba(255, 106, 61, 0.22);
+  --qy-accent-shadow-strong: rgba(255, 106, 61, 0.34);
+  --qy-accent-ring: rgba(255, 106, 61, 0.18);
+  --qy-accent-ring-strong: rgba(255, 106, 61, 0.28);
+
+  /* Secondary — film green (director's chair leather) */
+  --qy-secondary: #2f4a3f;
+  --qy-secondary-soft: rgba(47, 74, 63, 0.12);
+
+  /* Strokes — warm ink */
+  --qy-stroke-soft: rgba(26, 26, 31, 0.06);
+  --qy-stroke-base: rgba(26, 26, 31, 0.12);
+  --qy-stroke-strong: rgba(26, 26, 31, 0.22);
+  --qy-stroke-focus: rgba(255, 106, 61, 0.55);
+  --qy-stroke-danger: rgba(194, 68, 56, 0.6);
+  --qy-stroke-warning: rgba(214, 160, 46, 0.6);
+  --qy-stroke-success: rgba(63, 143, 92, 0.6);
+
+  /* Shadows — warm ink, no blue cast */
+  --qy-shadow-sm: 0 1px 3px rgba(26, 26, 31, 0.05), 0 2px 8px rgba(26, 26, 31, 0.04);
+  --qy-shadow-md: 0 4px 14px rgba(26, 26, 31, 0.07), 0 2px 4px rgba(26, 26, 31, 0.04);
+  --qy-shadow-lg: 0 10px 28px rgba(26, 26, 31, 0.09), 0 4px 8px rgba(26, 26, 31, 0.05);
+  --qy-shadow-modal: 0 20px 48px rgba(26, 26, 31, 0.16), 0 6px 12px rgba(26, 26, 31, 0.08);
+  --qy-shadow-nav: 0 6px 18px rgba(26, 26, 31, 0.06);
+
+  /* Radii — slightly tighter than waoowaoo */
+  --qy-radius-xs: 6px;
+  --qy-radius-sm: 10px;
+  --qy-radius-md: 14px;
+  --qy-radius-lg: 20px;
+  --qy-radius-xl: 26px;
+
+  /* Tone (semantic) */
+  --qy-tone-neutral-bg: rgba(26, 26, 31, 0.06);
+  --qy-tone-neutral-fg: #454650;
+  --qy-tone-info-bg: rgba(255, 106, 61, 0.14);
+  --qy-tone-info-fg: #c44a1f;
+  --qy-tone-success-bg: rgba(63, 143, 92, 0.16);
+  --qy-tone-success-fg: #2e6e44;
+  --qy-tone-warning-bg: rgba(214, 160, 46, 0.18);
+  --qy-tone-warning-fg: #8a6210;
+  --qy-tone-danger-bg: rgba(194, 68, 56, 0.14);
+  --qy-tone-danger-fg: #9a3328;
+
+  /* Overlays */
+  --qy-overlay-soft: rgba(26, 26, 31, 0.34);
+  --qy-overlay: rgba(26, 26, 31, 0.50);
+  --qy-overlay-strong: rgba(26, 26, 31, 0.66);
+
+  --qy-ghost-hover-bg: rgba(26, 26, 31, 0.04);
+
+  /* Motion */
+  --qy-dur-micro: 160ms;
+  --qy-dur-standard: 220ms;
+  --qy-dur-large: 360ms;
+  --qy-ease-out: cubic-bezier(0.22, 0.9, 0.32, 1);
+  --qy-ease-in: cubic-bezier(0.4, 0, 0.6, 1);
+
+  /* ============== Compatibility aliases (legacy --glass-*) ============== */
   /* Surface and text */
-  --glass-bg-canvas: #f3f4f6;
-  --glass-bg-surface: rgba(255, 255, 255, 0.88);
-  --glass-bg-surface-strong: rgba(255, 255, 255, 0.94);
-  --glass-bg-surface-modal: rgba(255, 255, 255, 0.97);
-  --glass-bg-muted: rgba(255, 255, 255, 0.86);
-  --glass-bg-nav: rgba(255, 255, 255, 0.96);
-  --glass-text-primary: #0a0a0a;
-  --glass-text-secondary: #111827;
-  --glass-text-tertiary: #4b5563;
-  --glass-text-on-accent: #ffffff;
+  --glass-bg-canvas: var(--qy-canvas);
+  --glass-bg-surface: var(--qy-surface);
+  --glass-bg-surface-strong: var(--qy-surface-strong);
+  --glass-bg-surface-modal: var(--qy-surface-modal);
+  --glass-bg-muted: var(--qy-surface-muted);
+  --glass-bg-nav: var(--qy-surface-nav);
+  --glass-text-primary: var(--qy-ink-primary);
+  --glass-text-secondary: var(--qy-ink-secondary);
+  --glass-text-tertiary: var(--qy-ink-tertiary);
+  --glass-text-on-accent: var(--qy-ink-on-accent);
 
-  /* Border strategy: default weak stroke, focus/error stronger */
-  --glass-stroke-soft: rgba(255, 255, 255, 0.22);
-  --glass-stroke-base: rgba(111, 126, 153, 0.24);
-  --glass-stroke-strong: rgba(93, 109, 138, 0.36);
-  --glass-stroke-focus: rgba(47, 123, 255, 0.64);
-  --glass-stroke-danger: rgba(236, 72, 72, 0.64);
-  --glass-stroke-warning: rgba(234, 149, 0, 0.62);
-  --glass-stroke-success: rgba(18, 176, 109, 0.62);
+  /* Strokes */
+  --glass-stroke-soft: var(--qy-stroke-soft);
+  --glass-stroke-base: var(--qy-stroke-base);
+  --glass-stroke-strong: var(--qy-stroke-strong);
+  --glass-stroke-focus: var(--qy-stroke-focus);
+  --glass-stroke-danger: var(--qy-stroke-danger);
+  --glass-stroke-warning: var(--qy-stroke-warning);
+  --glass-stroke-success: var(--qy-stroke-success);
 
-  /* Elevation + blur */
-  --glass-shadow-sm: 0 2px 10px rgba(22, 35, 64, 0.05);
-  --glass-shadow-md: 0 6px 18px rgba(19, 35, 66, 0.08);
-  --glass-shadow-lg: 0 10px 24px rgba(20, 35, 69, 0.1);
-  --glass-shadow-modal: 0 14px 34px rgba(15, 32, 66, 0.14);
-  --glass-shadow-nav: 0 8px 18px rgba(15, 32, 66, 0.1);
-  --glass-blur-sm: 4px;
-  --glass-blur-md: 8px;
-  --glass-blur-lg: 12px;
-  --glass-blur-nav: 16px;
+  /* Elevation + blur (we keep blur tokens but most surfaces no longer rely on them) */
+  --glass-shadow-sm: var(--qy-shadow-sm);
+  --glass-shadow-md: var(--qy-shadow-md);
+  --glass-shadow-lg: var(--qy-shadow-lg);
+  --glass-shadow-modal: var(--qy-shadow-modal);
+  --glass-shadow-nav: var(--qy-shadow-nav);
+  --glass-blur-sm: 2px;
+  --glass-blur-md: 4px;
+  --glass-blur-lg: 6px;
+  --glass-blur-nav: 8px;
 
-  /* Radius */
-  --glass-radius-xs: 8px;
-  --glass-radius-sm: 12px;
-  --glass-radius-md: 16px;
-  --glass-radius-lg: 22px;
-  --glass-radius-xl: 28px;
+  /* Radii */
+  --glass-radius-xs: var(--qy-radius-xs);
+  --glass-radius-sm: var(--qy-radius-sm);
+  --glass-radius-md: var(--qy-radius-md);
+  --glass-radius-lg: var(--qy-radius-lg);
+  --glass-radius-xl: var(--qy-radius-xl);
 
-  /* Spacing + density */
+  /* Spacing + density (unchanged) */
   --glass-space-1: 4px;
   --glass-space-2: 8px;
   --glass-space-3: 12px;
@@ -50,46 +137,46 @@
   --glass-density-compact-scale: 0.86;
   --glass-density-default-scale: 1;
 
-  /* Tone system */
-  --glass-tone-neutral-bg: rgba(100, 116, 139, 0.18);
-  --glass-tone-neutral-fg: #374151;
-  --glass-tone-info-bg: rgba(47, 123, 255, 0.2);
-  --glass-tone-info-fg: #1d63e8;
-  --glass-tone-success-bg: rgba(16, 185, 129, 0.2);
-  --glass-tone-success-fg: #0f9f62;
-  --glass-tone-warning-bg: rgba(245, 158, 11, 0.24);
-  --glass-tone-warning-fg: #b86400;
-  --glass-tone-danger-bg: rgba(239, 68, 68, 0.2);
-  --glass-tone-danger-fg: #cb3a3a;
+  /* Tones */
+  --glass-tone-neutral-bg: var(--qy-tone-neutral-bg);
+  --glass-tone-neutral-fg: var(--qy-tone-neutral-fg);
+  --glass-tone-info-bg: var(--qy-tone-info-bg);
+  --glass-tone-info-fg: var(--qy-tone-info-fg);
+  --glass-tone-success-bg: var(--qy-tone-success-bg);
+  --glass-tone-success-fg: var(--qy-tone-success-fg);
+  --glass-tone-warning-bg: var(--qy-tone-warning-bg);
+  --glass-tone-warning-fg: var(--qy-tone-warning-fg);
+  --glass-tone-danger-bg: var(--qy-tone-danger-bg);
+  --glass-tone-danger-fg: var(--qy-tone-danger-fg);
 
-  --glass-overlay-soft: rgba(10, 16, 30, 0.34);
-  --glass-overlay: rgba(10, 16, 30, 0.46);
-  --glass-overlay-strong: rgba(10, 16, 30, 0.58);
+  --glass-overlay-soft: var(--qy-overlay-soft);
+  --glass-overlay: var(--qy-overlay);
+  --glass-overlay-strong: var(--qy-overlay-strong);
 
-  /* Accent + interactive rings */
-  --glass-accent-from: #2f7bff;
-  --glass-accent-to: #5ca8ff;
-  --glass-accent-shadow-soft: rgba(47, 123, 255, 0.24);
-  --glass-accent-shadow-strong: rgba(47, 123, 255, 0.32);
-  --glass-focus-ring: rgba(47, 123, 255, 0.16);
-  --glass-focus-ring-strong: rgba(47, 123, 255, 0.22);
-  --glass-danger-ring: rgba(239, 68, 68, 0.14);
-  --glass-ghost-hover-bg: rgba(255, 255, 255, 0.5);
+  /* Accent + interactive rings — repointed to QuYing orange */
+  --glass-accent-from: var(--qy-accent);
+  --glass-accent-to: var(--qy-accent-hi);
+  --glass-accent-shadow-soft: var(--qy-accent-shadow-soft);
+  --glass-accent-shadow-strong: var(--qy-accent-shadow-strong);
+  --glass-focus-ring: var(--qy-accent-ring);
+  --glass-focus-ring-strong: var(--qy-accent-ring-strong);
+  --glass-danger-ring: rgba(194, 68, 56, 0.16);
+  --glass-ghost-hover-bg: var(--qy-ghost-hover-bg);
 }
 
 /* Low-cost preset for performance-sensitive environments */
 [data-glass-preset='subtle'] {
-  --glass-bg-surface: rgba(255, 255, 255, 0.92);
-  --glass-bg-surface-strong: rgba(255, 255, 255, 0.96);
-  --glass-bg-surface-modal: rgba(255, 255, 255, 0.98);
-  --glass-bg-nav: rgba(255, 255, 255, 0.98);
-  --glass-blur-sm: 2px;
-  --glass-blur-md: 4px;
-  --glass-blur-lg: 8px;
-  --glass-shadow-sm: 0 1px 6px rgba(22, 35, 64, 0.04);
-  --glass-shadow-md: 0 4px 12px rgba(19, 35, 66, 0.06);
-  --glass-shadow-lg: 0 8px 18px rgba(20, 35, 69, 0.08);
-  --glass-shadow-modal: 0 10px 22px rgba(15, 32, 66, 0.1);
-  --glass-shadow-nav: 0 6px 14px rgba(15, 32, 66, 0.08);
-  --glass-blur-nav: 12px;
+  --glass-bg-surface: rgba(255, 252, 246, 0.97);
+  --glass-bg-surface-strong: rgba(255, 252, 246, 0.99);
+  --glass-bg-surface-modal: #fffcf6;
+  --glass-bg-nav: rgba(255, 252, 246, 0.99);
+  --glass-blur-sm: 0px;
+  --glass-blur-md: 0px;
+  --glass-blur-lg: 0px;
+  --glass-blur-nav: 0px;
+  --glass-shadow-sm: 0 1px 2px rgba(26, 26, 31, 0.04);
+  --glass-shadow-md: 0 2px 8px rgba(26, 26, 31, 0.06);
+  --glass-shadow-lg: 0 6px 16px rgba(26, 26, 31, 0.08);
+  --glass-shadow-modal: 0 12px 28px rgba(26, 26, 31, 0.12);
+  --glass-shadow-nav: 0 4px 10px rgba(26, 26, 31, 0.05);
 }

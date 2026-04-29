@@ -149,6 +149,7 @@ const ROUTE_FILES = [
   'src/app/api/runs/[runId]/steps/[stepKey]/retry/route.ts',
   'src/app/api/runs/route.ts',
   'src/app/api/sse/route.ts',
+  'src/app/api/system/billing-mode/route.ts',
   'src/app/api/system/boot-id/route.ts',
   'src/app/api/task-target-states/route.ts',
   'src/app/api/tasks/[taskId]/route.ts',

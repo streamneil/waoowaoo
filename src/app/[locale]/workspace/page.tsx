@@ -376,10 +376,20 @@ export default function WorkspacePage() {
           {/* New Project Card */}
           <div
             onClick={() => openCreateModal()}
-            className="glass-surface p-6 cursor-pointer group flex items-center justify-center bg-gradient-to-br from-blue-500/5 via-cyan-500/5 to-blue-600/5 hover:from-blue-500/10 hover:via-cyan-500/10 hover:to-blue-600/10 transition-all duration-300"
+            className="glass-surface p-6 cursor-pointer group flex items-center justify-center transition-all duration-300"
+            style={{
+              backgroundImage:
+                'linear-gradient(135deg, rgba(255,106,61,0.05) 0%, rgba(214,160,46,0.05) 50%, rgba(47,74,63,0.05) 100%)',
+            }}
           >
             <div className="flex flex-col items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 group-hover:scale-110 transition-all duration-300">
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-all duration-300"
+                style={{
+                  background: 'linear-gradient(135deg, #FF6A3D 0%, #FF8B66 100%)',
+                  boxShadow: '0 10px 24px -8px rgba(255,106,61,0.4)',
+                }}
+              >
                 <AppIcon name="plus" className="w-6 h-6 text-white" />
               </div>
               <span className="text-sm font-medium text-[var(--glass-text-secondary)] group-hover:text-[var(--glass-text-primary)] transition-colors">{t('newProject')}</span>
@@ -404,7 +414,13 @@ export default function WorkspacePage() {
                 className="glass-surface cursor-pointer relative group block hover:border-[var(--glass-tone-info-fg)]/40 transition-all duration-300 overflow-hidden"
               >
                 {/* 悬停光效 */}
-                <div className="absolute inset-0 rounded-[inherit] bg-gradient-to-br from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div
+                  className="absolute inset-0 rounded-[inherit] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                  style={{
+                    backgroundImage:
+                      'linear-gradient(135deg, rgba(255,106,61,0.08) 0%, rgba(47,74,63,0.06) 100%)',
+                  }}
+                />
 
                 <div className="p-5 relative z-10">
                   {/* 操作按钮 */}
@@ -459,7 +475,10 @@ export default function WorkspacePage() {
                       {/* 共享渐变定义 */}
                       <IconGradientDefs className="w-0 h-0 absolute" aria-hidden="true" />
                       <AppIcon name="statsBarGradient" className="w-4 h-4 flex-shrink-0" />
-                      <div className="flex items-center gap-3 text-sm font-semibold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                      <div
+                        className="flex items-center gap-3 text-sm font-semibold bg-clip-text text-transparent"
+                        style={{ backgroundImage: 'linear-gradient(90deg, #FF6A3D 0%, #2F4A3F 100%)' }}
+                      >
                         {project.stats.episodes > 0 && (
                           <span className="flex items-center gap-1" title={t('statsEpisodes')}>
                             <AppIcon name="statsEpisodeGradient" className="w-3.5 h-3.5" />

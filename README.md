@@ -1,72 +1,40 @@
 <p align="center">
-  <a href="https://www.waoowaoo.com/">
-    <img src="images/cta-banner.png" alt="🚀 探索 AI 影视的下一代创作流 | 立即加入 waoowaoo 在线网页版内测候补" width="800">
-  </a>
+  <img src="public/banner.png" alt="趣影 QuYing" width="720">
+</p>
+
+<h1 align="center">趣影 · QuYing</h1>
+
+<p align="center">
+  <strong>用一句话，拍一部片。</strong><br>
+  一站式 AI 短剧 / 漫画影视创作平台 — 从小说文本到分镜成片，一气呵成。
 </p>
 
 <p align="center">
-  <img src="public/banner.png" alt="waoowaoo" width="600">
+  <a href="README_en.md">English</a>
 </p>
-
-<h1 align="center">waoowaoo AI 影视 Studio</h1>
-
-<p align="center">
-  一款基于 AI 技术的短剧/漫画视频制作工具，支持从小说文本自动生成分镜、角色、场景，并制作成完整视频。
-</p>
-
-<p align="center">
-  <a href="README_en.md">English</a> · <a href="https://www.waoowaoo.com/">加入内测候补</a> · <a href="https://github.com/saturndec/waoowaoo/issues">反馈问题</a>
-</p>
-
-> [!IMPORTANT]
-> ⚠️ **测试版声明**：本项目目前处于测试初期阶段，由于暂时只有我一个人开发，存在部分 bug 和不完善之处。我们正在快速迭代更新中，**欢迎进群反馈问题和需求，及时关注项目更新！目前更新会非常频繁，后续会增加大量新功能以及优化效果，我们的目标是成为行业最强AI工具！**
-
-<img src="https://github.com/user-attachments/assets/2b3fc495-9812-493a-8dbc-5bec4757df31" width="30%">
-
----
-## ✨ 功能特性
-
-- 🎬 **AI 剧本分析** — 自动解析小说，提取角色、场景、剧情
-- 🎨 **角色 & 场景生成** — AI 生成一致性人物和场景图片
-- 📽️ **分镜视频制作** — 自动生成分镜头并合成视频
-- 🎙️ **AI 配音** — 多角色语音合成
-- 🌐 **多语言支持** — 中文 / 英文界面，右上角一键切换
 
 ---
 
-## 🚀 快速开始
+## ✨ 核心能力
 
-**前提条件**：安装 [Docker Desktop](https://docs.docker.com/get-docker/)
+- 🎬 **AI 剧本分析** — 自动解析小说，提取角色、场景、剧情线索
+- 🎨 **角色 / 场景生成** — 高一致性的 AI 人物与场景图，支持系列化设定
+- 📽️ **分镜制片** — 文字一键生成分镜，自动合成完整短剧视频
+- 🎙️ **AI 配音** — 多角色语音合成，情感化朗读
+- 🌐 **中英双语界面** — 右上角一键切换
 
-### 方式一：拉取预构建镜像（最简单）
+---
 
-无需克隆仓库，下载即用：
+## 🚀 快速部署
 
-```bash
-# 下载 docker-compose.yml
-curl -O https://raw.githubusercontent.com/saturndec/waoowaoo/main/docker-compose.yml
+**前提条件**：[Docker Desktop](https://docs.docker.com/get-docker/)
 
-# 启动所有服务
-docker compose up -d
-```
-
-> ⚠️ 当前为测试版，版本间数据库不兼容。升级请先清除旧数据：
+### 方式一：克隆仓库 + Docker 自构建（推荐）
 
 ```bash
-docker compose down -v
-docker rmi ghcr.io/saturndec/waoowaoo:latest
-curl -O https://raw.githubusercontent.com/saturndec/waoowaoo/main/docker-compose.yml
-docker compose up -d
-```
-
-> 启动后请**清空浏览器缓存**并重新登录，避免旧版本缓存导致异常。
-
-### 方式二：克隆仓库 + Docker 构建（完全控制）
-
-```bash
-git clone https://github.com/saturndec/waoowaoo.git
-cd waoowaoo
-docker compose up -d
+git clone <your-repo-url> quying
+cd quying
+docker compose up -d --build
 ```
 
 更新版本：
@@ -75,24 +43,31 @@ git pull
 docker compose down && docker compose up -d --build
 ```
 
-### 方式三：本地开发模式（开发者）
+> ⚠️ 当前为内测阶段，不同版本之间的数据库结构可能不兼容。升级前请先清理旧数据：
+> ```bash
+> docker compose down -v
+> docker compose up -d --build
+> ```
+> 启动后请**清空浏览器缓存**并重新登录，避免旧版本前端缓存导致异常。
+
+### 方式二：本地开发模式
 
 ```bash
-git clone https://github.com/saturndec/waoowaoo.git
-cd waoowaoo
+git clone <your-repo-url> quying
+cd quying
 
 # 复制环境变量配置文件（必须在 npm install 之前完成）
 cp .env.example .env
-# ⚠️ 编辑 .env，填入你的 AI API Key（NEXTAUTH_URL 默认已是 http://localhost:3000，无需修改）
+# ⚠️ 编辑 .env，填入你的 AI API Key（NEXTAUTH_URL 默认为 http://localhost:3000，无需修改）
 
 npm install
 
-# 只启动基础设施
+# 只启动基础设施（MySQL / Redis / MinIO）
 # 注意：docker-compose.yml 将服务映射到非标准端口，.env.example 已按此预设
-mysql:13306  redis:16379  minio:19000
+# mysql:13306  redis:16379  minio:19000
 docker compose up mysql redis minio -d
 
-# 初始化数据库表结构（首次必须执行，跳过会导致启动后报错）
+# 初始化数据库表结构（首次必须执行）
 npx prisma db push
 
 # 启动开发服务器
@@ -100,13 +75,9 @@ npm run dev
 ```
 
 > [!WARNING]
-> 跳过 `npx prisma db push` 会导致所有数据库表不存在，启动后报错 `The table 'tasks' does not exist`。请务必先运行此命令再启动开发服务器。
+> 跳过 `npx prisma db push` 会导致数据库表不存在，启动后报错 `The table 'tasks' does not exist`。请务必先执行此命令。
 
----
-
-访问 [http://localhost:13000](http://localhost:13000)（方式一、二）或 [http://localhost:3000](http://localhost:3000)（方式三）开始使用！
-
-> 首次启动会自动完成数据库初始化，无需任何额外配置。
+访问 [http://localhost:13000](http://localhost:13000)（Docker 模式）或 [http://localhost:3000](http://localhost:3000)（本地开发）开始使用！
 
 > [!TIP]
 > **如果遇到网页卡顿**：HTTP 模式下浏览器可能限制并发连接。可安装 [Caddy](https://caddyserver.com/docs/install) 启用 HTTPS：
@@ -119,43 +90,43 @@ npm run dev
 
 ## 🔧 API 配置
 
-启动后进入**设置中心**配置 AI 服务的 API Key，内置配置教程。
+启动后进入**设置中心**配置 AI 服务的 API Key，内置详细的配置教程。
 
-> 💡 **注意**：目前仅推荐使用各服务商官方 API，第三方兼容格式（OpenAI Compatible）尚不完善，后续版本会持续优化。
+> 💡 **建议**：目前推荐使用各服务商的官方 API。第三方兼容格式（OpenAI Compatible）的支持还在打磨中，后续版本会持续优化。
 
 ---
 
 ## 📦 技术栈
 
-- **框架**: Next.js 15 + React 19
-- **数据库**: MySQL + Prisma ORM
-- **队列**: Redis + BullMQ
-- **样式**: Tailwind CSS v4
-- **认证**: NextAuth.js
+- **框架**：Next.js 15 + React 19
+- **数据库**：MySQL + Prisma ORM
+- **任务队列**：Redis + BullMQ
+- **样式**：Tailwind CSS v4 + 趣影自有视觉系统
+- **认证**：NextAuth.js
+- **AI Providers**：OpenAI · Google Gemini · OpenRouter · fal.ai · 等
 
 ---
 
-## 📦 页面功能预览
+## 🎨 设计语言
 
-![4f7b913264f7f26438c12560340e958c67fa833a](https://github.com/user-attachments/assets/fa0e9c57-9ea0-4df3-893e-b76c4c9d304b)
-![67509361cbe6809d2496a550de5733b9f99a9702](https://github.com/user-attachments/assets/f2fb6a64-5ba8-4896-a064-be0ded213e42)
-![466e13c8fd1fc799d8f588c367ebfa24e1e99bf7](https://github.com/user-attachments/assets/09bbff39-e535-4c67-80a9-69421c3b05ee)
-![c067c197c20b0f1de456357c49cdf0b0973c9b31](https://github.com/user-attachments/assets/688e3147-6e95-43b0-b9e7-dd9af40db8a0)
+趣影使用「胶片感 · 暖纸 · 夕阳橙」的视觉系统，与传统蓝紫 SaaS 风格刻意拉开距离：
 
----
+| 角色 | 色值 |
+|---|---|
+| 画布 | `#F5F1EA` 米纸 |
+| 主文 | `#1A1A1F` 胶片黑 |
+| 品牌色 | `#FF6A3D` 夕阳橙 |
+| 副色 | `#2F4A3F` 胶片绿 |
 
-## 🤝 参与方式
-
-本项目由核心团队独立维护。欢迎你通过以下方式参与：
-
-- 🐛 提交 [Issue](https://github.com/saturndec/waoowaoo/issues) 反馈 Bug
-- 💡 提交 [Issue](https://github.com/saturndec/waoowaoo/issues) 提出功能建议
-- 🔧 提交 Pull Request 供参考 — 我们会认真审阅每一个 PR 的思路，但最终由团队自行实现修复，不会直接合并外部 PR
+中文 Display 字体使用思源宋体（电影海报感），UI 字体使用 Geist Sans。
 
 ---
 
-**Made with ❤️ by waoowaoo team**
+## 🤝 反馈
 
-## Star History
+- 提交 Issue 反馈 Bug 或功能建议
+- 提交 Pull Request 参与共建
 
-[![Star History Chart](https://api.star-history.com/svg?repos=saturndec/waoowaoo&type=date&legend=top-left)](https://www.star-history.com/#saturndec/waoowaoo&type=date&legend=top-left)
+---
+
+**Made with ❤️ — 趣影 QuYing 团队**

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none">
+  <rect x="10" y="10" width="236" height="236" rx="60" fill="#1A1A1F"/>
+
+  <!-- Q ring: open arc, notch at lower-right -->
+  <path
+    d="M 175 152 A 64 64 0 1 0 152 175"
+    stroke="url(#qy-ring)"
+    stroke-width="19"
+    stroke-linecap="round"
+    fill="none"/>
+
+  <!-- Y tail: diagonal through the notch -->
+  <path
+    d="M 117 117 L 200 200"
+    stroke="url(#qy-tail)"
+    stroke-width="19"
+    stroke-linecap="round"/>
+
+  <!-- Spark -->
+  <circle cx="200" cy="200" r="13" fill="#FFE4D6"/>
+
+  <defs>
+    <linearGradient id="qy-ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF8B66"/>
+      <stop offset="100%" stop-color="#FF6A3D"/>
+    </linearGradient>
+    <linearGradient id="qy-tail" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF6A3D"/>
+      <stop offset="100%" stop-color="#FFB089"/>
+    </linearGradient>
+  </defs>
+</svg>
