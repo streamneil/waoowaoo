@@ -72,6 +72,8 @@ export default function Navbar() {
 
             ) : (
               <>
+                {/* 注册入口已隐藏：恢复公开注册时取消下方注释，并可改回「登录」弱样式 + 「注册」主按钮 */}
+                {/*
                 <Link
                   href={{ pathname: '/auth/signin' }}
                   className="text-sm text-[var(--glass-text-secondary)] hover:text-[var(--glass-text-primary)] font-medium transition-colors"
@@ -83,6 +85,13 @@ export default function Navbar() {
                   className="glass-btn-base glass-btn-primary px-4 py-2 text-sm font-medium"
                 >
                   {t('signup')}
+                </Link>
+                */}
+                <Link
+                  href={{ pathname: '/auth/signin' }}
+                  className="glass-btn-base glass-btn-primary px-4 py-2 text-sm font-medium"
+                >
+                  {t('signin')}
                 </Link>
                 <LanguageSwitcher />
               </>

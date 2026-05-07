@@ -105,14 +105,17 @@ export default function SignIn() {
               </button>
             </form>
 
+            {/* 注册入口已隐藏：恢复时在登录页底部展示「没有账号？去注册」 */}
+            {/*
             <div className="mt-6 text-center">
               <p className="text-[var(--glass-text-secondary)]">
-                {t('noAccount')}{" "}
+                {t('noAccount')}{' '}
                 <Link href={{ pathname: '/auth/signup' }} className="text-[var(--glass-tone-info-fg)] hover:underline font-medium">
                   {t('signupNow')}
                 </Link>
               </p>
             </div>
+            */}
 
             <div className="mt-6 text-center">
               <Link href={{ pathname: '/' }} className="text-[var(--glass-text-tertiary)] hover:text-[var(--glass-text-secondary)] text-sm">

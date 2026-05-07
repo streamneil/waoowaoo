@@ -95,6 +95,8 @@ export default function Home() {
                 className="flex flex-wrap gap-4 pt-4 animate-fade-in"
                 style={{ animationDelay: '0.6s' }}
               >
+                {/* 注册入口已隐藏：原为「立即体验」→ /auth/signup + 「进入工作区」→ /auth/signin；当前主 CTA 统一进登录 */}
+                {/*
                 <Link
                   href={{ pathname: '/auth/signup' }}
                   className="glass-btn-base glass-btn-primary px-8 py-4 rounded-xl font-semibold transition-all duration-300"
@@ -106,6 +108,13 @@ export default function Home() {
                   className="glass-btn-base glass-btn-secondary px-8 py-4 rounded-xl font-semibold transition-all duration-300"
                 >
                   {t('enterWorkspace')}
+                </Link>
+                */}
+                <Link
+                  href={{ pathname: '/auth/signin' }}
+                  className="glass-btn-base glass-btn-primary px-8 py-4 rounded-xl font-semibold transition-all duration-300"
+                >
+                  {t('getStarted')}
                 </Link>
               </div>
 
