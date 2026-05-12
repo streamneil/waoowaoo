@@ -1,5 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+CLAUDE.md
+
 # dependencies
 /node_modules
 /.pnp
@@ -88,3 +90,4 @@ docs/
 # .github/ — 只保留 workflows，忽略其他
 .github/*
 !.github/workflows/
+.gitnexus
