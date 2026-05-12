@@ -83,6 +83,7 @@ export function mergeProvidersForDisplay(
 
         const providerKey = getProviderKey(savedProvider.id)
         const matchedPreset = presetProviders.find((presetProvider) => presetProvider.id === providerKey)
+        const serverHasApiKey = (savedProvider as { hasApiKey?: boolean }).hasApiKey === true
         if (matchedPreset) {
             const apiKey = savedProvider.apiKey || ''
             const providerBaseUrl = providerKey === 'minimax'
@@ -91,7 +92,7 @@ export function mergeProvidersForDisplay(
             merged.push({
                 ...matchedPreset,
                 apiKey,
-                hasApiKey: apiKey.length > 0,
+                hasApiKey: serverHasApiKey || apiKey.length > 0,
                 hidden: savedProvider.hidden === true,
                 baseUrl: providerBaseUrl,
                 apiMode: savedProvider.apiMode,
@@ -103,7 +104,7 @@ export function mergeProvidersForDisplay(
 
         merged.push({
             ...savedProvider,
-            hasApiKey: !!savedProvider.apiKey,
+            hasApiKey: serverHasApiKey || !!savedProvider.apiKey,
         })
     }
 
@@ -543,7 +544,15 @@ export function useProviders(): UseProvidersReturn {
                 p.id === providerId ? { ...p, apiKey, hasApiKey: !!apiKey } : p
             )
             latestProvidersRef.current = next
-            void performSave(undefined, true)
+            void performSave(undefined, true).then(() => {
+                setProviders(after => {
+                    const cleared = after.map(p =>
+                        p.id === providerId ? { ...p, apiKey: '', hasApiKey: !!apiKey } : p
+                    )
+                    latestProvidersRef.current = cleared
+                    return cleared
+                })
+            })
             return next
         })
     }, [performSave])

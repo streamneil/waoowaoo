@@ -66,7 +66,7 @@ export function ProviderBaseFields({ provider, t, state }: ProviderBaseFieldsPro
               {provider.hasApiKey ? (
                 <>
                   <span className="min-w-0 flex-1 overflow-hidden whitespace-nowrap rounded-lg bg-[var(--glass-bg-surface)] px-3 py-1.5 font-mono text-[12px] text-[var(--glass-text-secondary)]">
-                    {state.showKey ? provider.apiKey : state.maskedKey}
+                    {state.showKey ? (provider.apiKey || state.maskedKey) : state.maskedKey}
                   </span>
                   <div className="flex shrink-0 items-center gap-1">
                     <button

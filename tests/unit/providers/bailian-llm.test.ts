@@ -53,7 +53,7 @@ describe('bailian llm provider', () => {
     expect(openAiCtorMock).toHaveBeenCalledWith({
       apiKey: 'bl-key',
       baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-      timeout: 30_000,
+      timeout: 600_000,
     })
     expect(createChatCompletionMock).toHaveBeenCalledWith({
       model: 'qwen3.5-plus',

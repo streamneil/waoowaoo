@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { encryptApiKey, decryptApiKey } from '@/lib/crypto-utils'
+import { encryptApiKey } from '@/lib/crypto-utils'
 import { requireUserAuth, isErrorResponse } from '@/lib/api-auth'
 import { apiHandler, ApiError } from '@/lib/api-errors'
 import {
@@ -1678,7 +1678,8 @@ export const GET = apiHandler(async () => {
 
   const providers = parseStoredProviders(pref?.customProviders).map((provider) => ({
     ...provider,
-    apiKey: provider.apiKey ? decryptApiKey(provider.apiKey) : '',
+    apiKey: '',
+    hasApiKey: !!provider.apiKey,
   }))
 
   const billingMode = await getBillingMode()
@@ -1819,10 +1820,8 @@ export const PUT = apiHandler(async (request: NextRequest) => {
     const providersToSave = normalizedProviders.map((provider) => {
       const existing = existingProviders.find((candidate) => candidate.id === provider.id)
       let finalApiKey: string | undefined
-      if (provider.apiKey === undefined) {
+      if (provider.apiKey === undefined || provider.apiKey === '') {
         finalApiKey = existing?.apiKey
-      } else if (provider.apiKey === '') {
-        finalApiKey = undefined
       } else {
         finalApiKey = encryptApiKey(provider.apiKey)
       }

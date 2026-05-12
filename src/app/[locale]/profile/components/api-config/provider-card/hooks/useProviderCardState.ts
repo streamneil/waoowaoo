@@ -513,7 +513,7 @@ export function useProviderCardState({
       const res = await apiFetch('/api/user/api-config/test-provider', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, providerId: provider.id }),
       })
       const data = await res.json()
       setKeyTestSteps(data.steps || [])
@@ -770,6 +770,7 @@ export function useProviderCardState({
 
   const maskedKey = (() => {
     const key = provider.apiKey || ''
+    if (key.length === 0 && provider.hasApiKey) return '•'.repeat(50)
     if (key.length <= 8) return '•'.repeat(key.length)
     return `${key.slice(0, 4)}${'•'.repeat(50)}`
   })()
