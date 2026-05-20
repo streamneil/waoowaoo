@@ -174,7 +174,7 @@ export default function VideoPanelCardBody({ runtime }: VideoPanelCardBodyProps)
                       )}
                     disabled={
                       taskStatus.isVideoTaskRunning
-                      || !panel.imageUrl
+                      || (videoModel.requiresFirstFrameImage && !panel.imageUrl)
                       || !videoModel.selectedModel
                       || videoModel.missingCapabilityFields.length > 0
                     }

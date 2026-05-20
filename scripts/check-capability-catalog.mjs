@@ -14,6 +14,7 @@ const CAPABILITY_NAMESPACE_ALLOWED_FIELDS = {
     'resolutionOptions',
     'firstlastframe',
     'supportGenerateAudio',
+    'inputType',
     'fieldI18n',
   ]),
   audio: new Set(['voiceOptions', 'rateOptions', 'fieldI18n']),
@@ -225,6 +226,9 @@ function validateCapabilitiesForModelType(issues, file, index, modelType, capabi
       }
       if (video.firstlastframe !== undefined && typeof video.firstlastframe !== 'boolean') {
         pushIssue(issues, file, index, 'capabilities.video.firstlastframe', 'must be boolean')
+      }
+      if (video.inputType !== undefined && video.inputType !== 'image-to-video' && video.inputType !== 'text-to-video') {
+        pushIssue(issues, file, index, 'capabilities.video.inputType', 'must be image-to-video or text-to-video')
       }
       validateFieldI18nMap(issues, file, index, 'video', video)
     }

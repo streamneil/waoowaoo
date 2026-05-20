@@ -87,9 +87,10 @@ vi.mock('@/lib/prisma', () => ({ prisma: prismaMock }))
 vi.mock('@/lib/media/outbound-image', () => ({
   normalizeToBase64ForGeneration: vi.fn(async (input: string) => input),
 }))
-vi.mock('@/lib/model-capabilities/lookup', () => ({
-  resolveBuiltinCapabilitiesByModelKey: vi.fn(() => ({ video: { firstlastframe: true } })),
+const modelCapabilitiesMock = vi.hoisted(() => ({
+  resolveBuiltinCapabilitiesByModelKey: vi.fn<(...args: unknown[]) => unknown>(() => ({ video: { firstlastframe: true } })),
 }))
+vi.mock('@/lib/model-capabilities/lookup', () => modelCapabilitiesMock)
 vi.mock('@/lib/model-config-contract', () => ({
   parseModelKeyStrict: vi.fn(() => ({ provider: 'fal' })),
 }))
@@ -275,6 +276,59 @@ describe('worker video processor behavior', () => {
         lipSyncTaskId: null,
       },
     })
+  })
+
+  it('VIDEO_PANEL: text-to-video 模型在 panel 无 imageUrl 时仍能继续', async () => {
+    const processor = workerState.processor
+    expect(processor).toBeTruthy()
+
+    prismaMock.novelPromotionPanel.findUnique.mockResolvedValueOnce(
+      buildPanel({ imageUrl: null, videoPrompt: '海岸线' }),
+    )
+    modelCapabilitiesMock.resolveBuiltinCapabilitiesByModelKey.mockReturnValueOnce({
+      video: { inputType: 'text-to-video' },
+    })
+
+    const job = buildJob({
+      type: TASK_TYPE.VIDEO_PANEL,
+      payload: {
+        videoModel: 'bailian::happyhorse-1.0-t2v',
+        generationOptions: {
+          duration: 5,
+          resolution: '720P',
+        },
+      },
+    })
+
+    const result = await processor!(job) as { panelId: string; videoUrl: string }
+    expect(result.panelId).toBe('panel-1')
+    expect(result.videoUrl).toBe('cos/lip-sync/video.mp4')
+    expect(utilsMock.toSignedUrlIfCos).not.toHaveBeenCalled()
+  })
+
+  it('VIDEO_PANEL: image-to-video 模型在 panel 无 imageUrl 时显式失败', async () => {
+    const processor = workerState.processor
+    expect(processor).toBeTruthy()
+
+    prismaMock.novelPromotionPanel.findUnique.mockResolvedValueOnce(
+      buildPanel({ imageUrl: null }),
+    )
+    modelCapabilitiesMock.resolveBuiltinCapabilitiesByModelKey.mockReturnValueOnce({
+      video: { firstlastframe: true },
+    })
+
+    const job = buildJob({
+      type: TASK_TYPE.VIDEO_PANEL,
+      payload: {
+        videoModel: 'bailian::happyhorse-1.0-i2v',
+        generationOptions: {
+          duration: 5,
+          resolution: '720P',
+        },
+      },
+    })
+
+    await expect(processor!(job)).rejects.toThrow(/has no imageUrl/)
   })
 
   it('未知任务类型: 显式报错', async () => {

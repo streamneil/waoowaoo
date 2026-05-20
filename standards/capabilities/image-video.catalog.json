@@ -816,6 +816,73 @@
   },
   {
     "modelType": "video",
+    "provider": "bailian",
+    "modelId": "happyhorse-1.0-i2v",
+    "capabilities": {
+      "video": {
+        "generationModeOptions": [
+          "normal"
+        ],
+        "resolutionOptions": [
+          "720P",
+          "1080P"
+        ],
+        "durationOptions": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "firstlastframe": false,
+        "supportGenerateAudio": false
+      }
+    }
+  },
+  {
+    "modelType": "video",
+    "provider": "bailian",
+    "modelId": "happyhorse-1.0-t2v",
+    "capabilities": {
+      "video": {
+        "generationModeOptions": [
+          "normal"
+        ],
+        "resolutionOptions": [
+          "720P",
+          "1080P"
+        ],
+        "durationOptions": [
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "firstlastframe": false,
+        "supportGenerateAudio": false,
+        "inputType": "text-to-video"
+      }
+    }
+  },
+  {
+    "modelType": "video",
     "provider": "minimax",
     "modelId": "minimax-hailuo-2.3",
     "capabilities": {

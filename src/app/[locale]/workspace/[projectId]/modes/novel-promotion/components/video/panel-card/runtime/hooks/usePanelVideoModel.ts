@@ -190,6 +190,9 @@ export function usePanelVideoModel({
     }))
   }
 
+  const selectedInputType = selectedOption?.capabilities?.video?.inputType ?? 'image-to-video'
+  const requiresFirstFrameImage = selectedInputType !== 'text-to-video'
+
   return {
     selectedModel,
     setSelectedModel,
@@ -198,5 +201,7 @@ export function usePanelVideoModel({
     setCapabilityValue,
     missingCapabilityFields,
     videoModelOptions,
+    requiresFirstFrameImage,
+    selectedInputType,
   }
 }

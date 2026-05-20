@@ -34,6 +34,9 @@ const BAILIAN_FIRST_LAST_FRAME_CAPABLE_MODELS = new Set([
   ...BAILIAN_FIRST_LAST_FRAME_ONLY_MODELS,
   'wan2.7-i2v',
 ])
+const HAPPYHORSE_I2V_MODEL = 'happyhorse-1.0-i2v'
+const HAPPYHORSE_T2V_MODEL = 'happyhorse-1.0-t2v'
+const HAPPYHORSE_MODELS = new Set([HAPPYHORSE_I2V_MODEL, HAPPYHORSE_T2V_MODEL])
 
 interface BailianVideoSubmitResponse {
   request_id?: string
@@ -51,11 +54,18 @@ interface BailianVideoSubmitParameters {
   watermark?: boolean
   prompt_extend?: boolean
   duration?: number
+  ratio?: string
+  seed?: number
+}
+
+interface BailianVideoMediaItem {
+  type: 'first_frame'
+  url: string
 }
 
 interface BailianVideoSubmitBody {
   model: string
-  input: Record<string, string>
+  input: Record<string, unknown>
   parameters?: BailianVideoSubmitParameters
 }
 
@@ -95,6 +105,9 @@ function assertNoUnsupportedOptions(options: BailianGenerateRequestOptions): voi
     'promptExtend',
     'duration',
     'lastFrameImageUrl',
+    'ratio',
+    'aspectRatio',
+    'seed',
   ])
   for (const [key, value] of Object.entries(options)) {
     if (value === undefined) continue
@@ -104,17 +117,112 @@ function assertNoUnsupportedOptions(options: BailianGenerateRequestOptions): voi
   }
 }
 
+function readOptionalSeed(value: unknown): number | undefined {
+  if (value === undefined) return undefined
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || value > 2147483647) {
+    throw new Error('BAILIAN_VIDEO_OPTION_INVALID_SEED')
+  }
+  return value
+}
+
+function normalizeHappyHorseResolution(value: string): string | undefined {
+  if (!value) return undefined
+  const upper = value.toUpperCase()
+  if (upper === '720P' || upper === '1080P') return upper
+  // Accept lowercase variants from existing UI (e.g. '720p')
+  if (value === '720p') return '720P'
+  if (value === '1080p') return '1080P'
+  throw new Error(`BAILIAN_VIDEO_OPTION_VALUE_UNSUPPORTED: resolution=${value}`)
+}
+
+function buildHappyHorseSubmitRequest(
+  modelId: string,
+  imageUrl: string,
+  prompt: string,
+  options: BailianGenerateRequestOptions,
+): { endpoint: string; body: BailianVideoSubmitBody } {
+  const isI2V = modelId === HAPPYHORSE_I2V_MODEL
+  if (isI2V && !imageUrl) {
+    throw new Error('BAILIAN_VIDEO_IMAGE_URL_REQUIRED')
+  }
+  if (!isI2V && imageUrl) {
+    throw new Error(`BAILIAN_VIDEO_IMAGE_URL_UNSUPPORTED_FOR_MODEL: ${modelId}`)
+  }
+  if (readTrimmedString(options.lastFrameImageUrl)) {
+    throw new Error(`BAILIAN_VIDEO_LAST_FRAME_UNSUPPORTED_FOR_MODEL: ${modelId}`)
+  }
+  if (options.size !== undefined) {
+    throw new Error(`BAILIAN_VIDEO_OPTION_UNSUPPORTED: size for ${modelId}`)
+  }
+  if (options.promptExtend !== undefined) {
+    throw new Error(`BAILIAN_VIDEO_OPTION_UNSUPPORTED: promptExtend for ${modelId}`)
+  }
+
+  if (!isI2V && !prompt) {
+    throw new Error('BAILIAN_VIDEO_PROMPT_REQUIRED')
+  }
+
+  const input: Record<string, unknown> = {}
+  if (prompt) {
+    input.prompt = prompt
+  }
+  if (isI2V) {
+    const media: BailianVideoMediaItem[] = [
+      { type: 'first_frame', url: toFetchableUrl(imageUrl) },
+    ]
+    input.media = media
+  }
+
+  const resolution = normalizeHappyHorseResolution(readTrimmedString(options.resolution))
+  const duration = readOptionalPositiveInteger(options.duration, 'duration')
+  if (typeof duration === 'number' && (duration < 3 || duration > 15)) {
+    throw new Error('BAILIAN_VIDEO_OPTION_VALUE_UNSUPPORTED: duration must be in [3,15]')
+  }
+  const watermark = readOptionalBoolean(options.watermark)
+  const seed = readOptionalSeed(options.seed)
+  const ratio = readTrimmedString(options.ratio) || readTrimmedString(options.aspectRatio)
+
+  const parameters: BailianVideoSubmitParameters = {}
+  if (resolution) parameters.resolution = resolution
+  if (typeof duration === 'number') parameters.duration = duration
+  if (typeof watermark === 'boolean') parameters.watermark = watermark
+  if (typeof seed === 'number') parameters.seed = seed
+  if (ratio) {
+    if (isI2V) {
+      // i2v 不支持 ratio（宽高比跟随首帧），按文档忽略
+    } else {
+      parameters.ratio = ratio
+    }
+  }
+
+  const body: BailianVideoSubmitBody = {
+    model: modelId,
+    input,
+  }
+  if (Object.keys(parameters).length > 0) {
+    body.parameters = parameters
+  }
+
+  return { endpoint: BAILIAN_VIDEO_ENDPOINT, body }
+}
+
 function buildSubmitRequest(params: BailianVideoGenerateParams): {
   endpoint: string
   body: BailianVideoSubmitBody
 } {
   const imageUrl = readTrimmedString(params.imageUrl)
-  if (!imageUrl) {
-    throw new Error('BAILIAN_VIDEO_IMAGE_URL_REQUIRED')
-  }
   const modelId = readTrimmedString(params.options.modelId)
   if (!modelId) {
     throw new Error('BAILIAN_VIDEO_MODEL_ID_REQUIRED')
+  }
+
+  if (HAPPYHORSE_MODELS.has(modelId)) {
+    const prompt = readTrimmedString(params.prompt) || readTrimmedString(params.options.prompt)
+    return buildHappyHorseSubmitRequest(modelId, imageUrl, prompt, params.options)
+  }
+
+  if (!imageUrl) {
+    throw new Error('BAILIAN_VIDEO_IMAGE_URL_REQUIRED')
   }
 
   const firstFrameUrl = toFetchableUrl(imageUrl)

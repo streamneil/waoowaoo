@@ -34,6 +34,8 @@ export interface ImageCapabilities {
   fieldI18n?: CapabilityFieldI18nMap
 }
 
+export type VideoInputType = 'image-to-video' | 'text-to-video'
+
 export interface VideoCapabilities {
   generationModeOptions?: string[]
   generateAudioOptions?: boolean[]
@@ -42,6 +44,7 @@ export interface VideoCapabilities {
   resolutionOptions?: string[]
   firstlastframe?: boolean
   supportGenerateAudio?: boolean
+  inputType?: VideoInputType
   fieldI18n?: CapabilityFieldI18nMap
 }
 
@@ -96,7 +99,13 @@ const VIDEO_ALLOWED_FIELDS = new Set<keyof VideoCapabilities>([
   'resolutionOptions',
   'firstlastframe',
   'supportGenerateAudio',
+  'inputType',
   'fieldI18n',
+])
+
+const VIDEO_INPUT_TYPE_ALLOWED: ReadonlySet<string> = new Set([
+  'image-to-video',
+  'text-to-video',
 ])
 
 const AUDIO_ALLOWED_FIELDS = new Set<keyof AudioCapabilities>([
@@ -355,6 +364,17 @@ function validateVideoCapabilities(issues: CapabilityValidationIssue[], raw: unk
       field: 'capabilities.video.firstlastframe',
       message: 'firstlastframe must be boolean',
     })
+  }
+
+  if (raw.inputType !== undefined) {
+    if (typeof raw.inputType !== 'string' || !VIDEO_INPUT_TYPE_ALLOWED.has(raw.inputType)) {
+      issues.push({
+        code: 'CAPABILITY_VALUE_NOT_ALLOWED',
+        field: 'capabilities.video.inputType',
+        allowedValues: Array.from(VIDEO_INPUT_TYPE_ALLOWED),
+        message: 'inputType must be image-to-video or text-to-video',
+      })
+    }
   }
 
   validateFieldI18nMap(issues, 'video', raw.fieldI18n, {

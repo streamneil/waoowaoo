@@ -85,7 +85,10 @@ async function generateVideoForPanel(
   projectVideoRatio: string | null | undefined,
   generationOptions: VideoOptionMap,
 ): Promise<{ cosKey: string; generationMode: VideoGenerationMode; actualVideoTokens?: number }> {
-  if (!panel.imageUrl) {
+  const modelCapabilities = resolveBuiltinCapabilitiesByModelKey('video', modelId)
+  const isTextToVideo = modelCapabilities?.video?.inputType === 'text-to-video'
+
+  if (!isTextToVideo && !panel.imageUrl) {
     throw new Error(`Panel ${panel.id} has no imageUrl`)
   }
 
@@ -101,11 +104,14 @@ async function generateVideoForPanel(
     throw new Error(`Panel ${panel.id} has no video prompt`)
   }
 
-  const sourceImageUrl = toSignedUrlIfCos(panel.imageUrl, 3600)
-  if (!sourceImageUrl) {
-    throw new Error(`Panel ${panel.id} image url invalid`)
+  let sourceImageBase64 = ''
+  if (panel.imageUrl && !isTextToVideo) {
+    const sourceImageUrl = toSignedUrlIfCos(panel.imageUrl, 3600)
+    if (!sourceImageUrl) {
+      throw new Error(`Panel ${panel.id} image url invalid`)
+    }
+    sourceImageBase64 = await normalizeToBase64ForGeneration(sourceImageUrl)
   }
-  const sourceImageBase64 = await normalizeToBase64ForGeneration(sourceImageUrl)
 
   let lastFrameImageBase64: string | undefined
   const generationMode: VideoGenerationMode = firstLastFramePayload ? 'firstlastframe' : 'normal'

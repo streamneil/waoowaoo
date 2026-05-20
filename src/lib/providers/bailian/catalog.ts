@@ -15,6 +15,8 @@ const BAILIAN_CATALOG: Readonly<Record<OfficialModelModality, readonly string[]>
     'wan2.2-i2v-plus',
     'wan2.2-kf2v-flash',
     'wanx2.1-kf2v-plus',
+    'happyhorse-1.0-i2v',
+    'happyhorse-1.0-t2v',
   ],
   audio: [
     'qwen3-tts-vd-2026-01-26',
