@@ -310,6 +310,7 @@ describe('bailian video provider', () => {
       parameters: {
         resolution: '720P',
         duration: 5,
+        watermark: false,
       },
     }))
     expect(result).toEqual({
@@ -359,6 +360,7 @@ describe('bailian video provider', () => {
       parameters: {
         resolution: '1080P',
         duration: 8,
+        watermark: false,
         ratio: '16:9',
       },
     }))

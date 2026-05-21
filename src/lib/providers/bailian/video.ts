@@ -178,14 +178,15 @@ function buildHappyHorseSubmitRequest(
   if (typeof duration === 'number' && (duration < 3 || duration > 15)) {
     throw new Error('BAILIAN_VIDEO_OPTION_VALUE_UNSUPPORTED: duration must be in [3,15]')
   }
-  const watermark = readOptionalBoolean(options.watermark)
+  // happyhorse 文档默认 watermark=true（视频右下角“Happy Horse”）。我们默认关掉。
+  const watermark = readOptionalBoolean(options.watermark) ?? false
   const seed = readOptionalSeed(options.seed)
   const ratio = readTrimmedString(options.ratio) || readTrimmedString(options.aspectRatio)
 
   const parameters: BailianVideoSubmitParameters = {}
   if (resolution) parameters.resolution = resolution
   if (typeof duration === 'number') parameters.duration = duration
-  if (typeof watermark === 'boolean') parameters.watermark = watermark
+  parameters.watermark = watermark
   if (typeof seed === 'number') parameters.seed = seed
   if (ratio) {
     if (isI2V) {
