@@ -1,8 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRef } from 'react'
-import type { Location, Project } from '@/types/project'
 import { queryKeys } from '../keys'
-import type { ProjectAssetsData } from '../hooks/useProjectAssets'
 import {
     clearTaskTargetOverlay,
     upsertTaskTargetOverlay,
@@ -13,63 +10,6 @@ import {
     requestTaskResponseWithError,
 } from './mutation-shared'
 import { resolveTaskResponse } from '@/lib/task/client'
-
-interface SelectProjectLocationImageContext {
-    previousAssets: ProjectAssetsData | undefined
-    previousProject: Project | undefined
-    targetKey: string
-    requestId: number
-}
-
-function applyLocationSelectionToLocations(
-    locations: Location[],
-    locationId: string,
-    selectedIndex: number | null,
-): Location[] {
-    return locations.map((location) => {
-        if (location.id !== locationId) return location
-        const selectedImageId =
-            selectedIndex === null
-                ? null
-                : (location.images || []).find((image) => image.imageIndex === selectedIndex)?.id ?? null
-        return {
-            ...location,
-            selectedImageId,
-            images: (location.images || []).map((image) => ({
-                ...image,
-                isSelected: selectedIndex !== null && image.imageIndex === selectedIndex,
-            })),
-        }
-    })
-}
-
-function applyLocationSelectionToAssets(
-    previous: ProjectAssetsData | undefined,
-    locationId: string,
-    selectedIndex: number | null,
-): ProjectAssetsData | undefined {
-    if (!previous) return previous
-    return {
-        ...previous,
-        locations: applyLocationSelectionToLocations(previous.locations || [], locationId, selectedIndex),
-    }
-}
-
-function applyLocationSelectionToProject(
-    previous: Project | undefined,
-    locationId: string,
-    selectedIndex: number | null,
-): Project | undefined {
-    if (!previous?.novelPromotionData) return previous
-    const currentLocations = previous.novelPromotionData.locations || []
-    return {
-        ...previous,
-        novelPromotionData: {
-            ...previous.novelPromotionData,
-            locations: applyLocationSelectionToLocations(currentLocations, locationId, selectedIndex),
-        },
-    }
-}
 
 export function useGenerateProjectLocationImage(projectId: string) {
     const queryClient = useQueryClient()
@@ -308,9 +248,11 @@ export function useRegenerateSingleLocationImage(projectId: string) {
 
 export function useSelectProjectLocationImage(projectId: string) {
     const queryClient = useQueryClient()
-    const latestRequestIdByTargetRef = useRef<Record<string, number>>({})
     const invalidateProjectAssets = () =>
-        invalidateQueryTemplates(queryClient, [queryKeys.projectAssets.all(projectId)])
+        invalidateQueryTemplates(queryClient, [
+            queryKeys.projectAssets.all(projectId),
+            queryKeys.projectData(projectId),
+        ])
 
     return useMutation({
         mutationFn: async ({
@@ -318,7 +260,6 @@ export function useSelectProjectLocationImage(projectId: string) {
         }: {
             locationId: string
             imageIndex: number | null
-            confirm?: boolean
         }) => {
             return await requestJsonWithError(`/api/assets/${locationId}/select-render`, {
                 method: 'POST',
@@ -331,46 +272,7 @@ export function useSelectProjectLocationImage(projectId: string) {
                 })
             }, 'Failed to select image')
         },
-        onMutate: async (variables): Promise<SelectProjectLocationImageContext> => {
-            const targetKey = variables.locationId
-            const requestId = (latestRequestIdByTargetRef.current[targetKey] ?? 0) + 1
-            latestRequestIdByTargetRef.current[targetKey] = requestId
-
-            const assetsQueryKey = queryKeys.projectAssets.all(projectId)
-            const projectQueryKey = queryKeys.projectData(projectId)
-
-            await queryClient.cancelQueries({ queryKey: assetsQueryKey })
-            await queryClient.cancelQueries({ queryKey: projectQueryKey })
-
-            const previousAssets = queryClient.getQueryData<ProjectAssetsData>(assetsQueryKey)
-            const previousProject = queryClient.getQueryData<Project>(projectQueryKey)
-
-            queryClient.setQueryData<ProjectAssetsData | undefined>(assetsQueryKey, (previous) =>
-                applyLocationSelectionToAssets(previous, variables.locationId, variables.imageIndex),
-            )
-            queryClient.setQueryData<Project | undefined>(projectQueryKey, (previous) =>
-                applyLocationSelectionToProject(previous, variables.locationId, variables.imageIndex),
-            )
-
-            return {
-                previousAssets,
-                previousProject,
-                targetKey,
-                requestId,
-            }
-        },
-        onError: (_error, _variables, context) => {
-            if (!context) return
-            const latestRequestId = latestRequestIdByTargetRef.current[context.targetKey]
-            if (latestRequestId !== context.requestId) return
-            queryClient.setQueryData(queryKeys.projectAssets.all(projectId), context.previousAssets)
-            queryClient.setQueryData(queryKeys.projectData(projectId), context.previousProject)
-        },
-        onSettled: (_data, _error, variables) => {
-            if (variables.confirm) {
-                void invalidateProjectAssets()
-            }
-        },
+        onSettled: invalidateProjectAssets,
     })
 }
 

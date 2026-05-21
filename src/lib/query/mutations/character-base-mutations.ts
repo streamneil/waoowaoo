@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { logError as _ulogError } from '@/lib/logging/core'
-import { useRef } from 'react'
-import type { Character, Project } from '@/types/project'
+import type { Project } from '@/types/project'
 import { queryKeys } from '../keys'
 import type { ProjectAssetsData } from '../hooks/useProjectAssets'
 import { apiFetch } from '@/lib/api-fetch'
@@ -15,72 +14,9 @@ import {
     requestVoidWithError,
 } from './mutation-shared'
 
-interface SelectProjectCharacterImageContext {
-    previousAssets: ProjectAssetsData | undefined
-    previousProject: Project | undefined
-    targetKey: string
-    requestId: number
-}
-
 interface DeleteProjectCharacterContext {
     previousAssets: ProjectAssetsData | undefined
     previousProject: Project | undefined
-}
-
-function applyCharacterSelectionToCharacters(
-    characters: Character[],
-    characterId: string,
-    appearanceId: string,
-    selectedIndex: number | null,
-): Character[] {
-    return characters.map((character) => {
-        if (character.id !== characterId) return character
-        return {
-            ...character,
-            appearances: (character.appearances || []).map((appearance) => {
-                if (appearance.id !== appearanceId) return appearance
-                const selectedUrl =
-                    selectedIndex !== null && selectedIndex >= 0
-                        ? (appearance.imageUrls[selectedIndex] ?? null)
-                        : null
-                return {
-                    ...appearance,
-                    selectedIndex,
-                    imageUrl: selectedUrl ?? appearance.imageUrl ?? null,
-                }
-            }),
-        }
-    })
-}
-
-function applyCharacterSelectionToAssets(
-    previous: ProjectAssetsData | undefined,
-    characterId: string,
-    appearanceId: string,
-    selectedIndex: number | null,
-): ProjectAssetsData | undefined {
-    if (!previous) return previous
-    return {
-        ...previous,
-        characters: applyCharacterSelectionToCharacters(previous.characters || [], characterId, appearanceId, selectedIndex),
-    }
-}
-
-function applyCharacterSelectionToProject(
-    previous: Project | undefined,
-    characterId: string,
-    appearanceId: string,
-    selectedIndex: number | null,
-): Project | undefined {
-    if (!previous?.novelPromotionData) return previous
-    const currentCharacters = previous.novelPromotionData.characters || []
-    return {
-        ...previous,
-        novelPromotionData: {
-            ...previous.novelPromotionData,
-            characters: applyCharacterSelectionToCharacters(currentCharacters, characterId, appearanceId, selectedIndex),
-        },
-    }
 }
 
 function removeCharacterFromAssets(
@@ -197,9 +133,11 @@ export function useUploadProjectCharacterImage(projectId: string) {
 
 export function useSelectProjectCharacterImage(projectId: string) {
     const queryClient = useQueryClient()
-    const latestRequestIdByTargetRef = useRef<Record<string, number>>({})
     const invalidateProjectAssets = () =>
-        invalidateQueryTemplates(queryClient, [queryKeys.projectAssets.all(projectId)])
+        invalidateQueryTemplates(queryClient, [
+            queryKeys.projectAssets.all(projectId),
+            queryKeys.projectData(projectId),
+        ])
 
     return useMutation({
         mutationFn: async ({
@@ -208,7 +146,6 @@ export function useSelectProjectCharacterImage(projectId: string) {
             characterId: string
             appearanceId: string
             imageIndex: number | null
-            confirm?: boolean
         }) => {
             return await requestJsonWithError(`/api/assets/${characterId}/select-render`, {
                 method: 'POST',
@@ -222,46 +159,7 @@ export function useSelectProjectCharacterImage(projectId: string) {
                 })
             }, 'Failed to select image')
         },
-        onMutate: async (variables): Promise<SelectProjectCharacterImageContext> => {
-            const targetKey = `${variables.characterId}:${variables.appearanceId}`
-            const requestId = (latestRequestIdByTargetRef.current[targetKey] ?? 0) + 1
-            latestRequestIdByTargetRef.current[targetKey] = requestId
-
-            const assetsQueryKey = queryKeys.projectAssets.all(projectId)
-            const projectQueryKey = queryKeys.projectData(projectId)
-
-            await queryClient.cancelQueries({ queryKey: assetsQueryKey })
-            await queryClient.cancelQueries({ queryKey: projectQueryKey })
-
-            const previousAssets = queryClient.getQueryData<ProjectAssetsData>(assetsQueryKey)
-            const previousProject = queryClient.getQueryData<Project>(projectQueryKey)
-
-            queryClient.setQueryData<ProjectAssetsData | undefined>(assetsQueryKey, (previous) =>
-                applyCharacterSelectionToAssets(previous, variables.characterId, variables.appearanceId, variables.imageIndex),
-            )
-            queryClient.setQueryData<Project | undefined>(projectQueryKey, (previous) =>
-                applyCharacterSelectionToProject(previous, variables.characterId, variables.appearanceId, variables.imageIndex),
-            )
-
-            return {
-                previousAssets,
-                previousProject,
-                targetKey,
-                requestId,
-            }
-        },
-        onError: (_error, _variables, context) => {
-            if (!context) return
-            const latestRequestId = latestRequestIdByTargetRef.current[context.targetKey]
-            if (latestRequestId !== context.requestId) return
-            queryClient.setQueryData(queryKeys.projectAssets.all(projectId), context.previousAssets)
-            queryClient.setQueryData(queryKeys.projectData(projectId), context.previousProject)
-        },
-        onSettled: (_data, _error, variables) => {
-            if (variables.confirm) {
-                void invalidateProjectAssets()
-            }
-        },
+        onSettled: invalidateProjectAssets,
     })
 }
 

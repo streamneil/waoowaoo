@@ -7,6 +7,9 @@ import { MockQueryClient } from '../../helpers/mock-query-client'
 let queryClient = new MockQueryClient()
 const useQueryClientMock = vi.fn(() => queryClient)
 const useMutationMock = vi.fn((options: unknown) => options)
+const { invalidateQueryTemplatesMock } = vi.hoisted(() => ({
+  invalidateQueryTemplatesMock: vi.fn(),
+}))
 
 vi.mock('react', async () => {
   const actual = await vi.importActual<typeof import('react')>('react')
@@ -29,7 +32,7 @@ vi.mock('@/lib/query/mutations/mutation-shared', async () => {
     ...actual,
     requestJsonWithError: vi.fn(),
     requestVoidWithError: vi.fn(),
-    invalidateQueryTemplates: vi.fn(),
+    invalidateQueryTemplates: (...args: unknown[]) => invalidateQueryTemplatesMock(...args),
   }
 })
 
@@ -39,12 +42,9 @@ import {
 } from '@/lib/query/mutations/character-base-mutations'
 
 interface SelectProjectCharacterMutation {
-  onMutate: (variables: {
-    characterId: string
-    appearanceId: string
-    imageIndex: number | null
-  }) => Promise<unknown>
-  onError: (error: unknown, variables: unknown, context: unknown) => void
+  onMutate?: unknown
+  onError?: unknown
+  onSettled: () => void
 }
 
 interface DeleteProjectCharacterMutation {
@@ -96,42 +96,30 @@ describe('project asset optimistic mutations', () => {
     queryClient = new MockQueryClient()
     useQueryClientMock.mockClear()
     useMutationMock.mockClear()
+    invalidateQueryTemplatesMock.mockClear()
   })
 
-  it('optimistically selects project character image and ignores stale rollback', async () => {
+  // 选图 mutation 之前的乐观更新写到了 projectAssets.all，
+  // 但 useProjectAssets 真正订阅的是 assets.all('project', ...) (unified)，
+  // 导致 UI 在 refetch 之前看不到切换。
+  // 现契约：不再做乐观更新，依赖 onSettled 无条件 invalidate
+  // projectAssets.all + projectData（前缀匹配会让 unified 数据失效）。
+  it('selecting project character image invalidates both projectAssets and projectData on settle', () => {
     const projectId = 'project-1'
-    const assetsKey = queryKeys.projectAssets.all(projectId)
-    const projectKey = queryKeys.projectData(projectId)
-    queryClient.seedQuery(assetsKey, buildAssets(0))
-    queryClient.seedQuery(projectKey, buildProject(0))
 
     const mutation = useSelectProjectCharacterImage(projectId) as unknown as SelectProjectCharacterMutation
-    const firstVariables = {
-      characterId: 'character-1',
-      appearanceId: 'appearance-1',
-      imageIndex: 1,
-    }
-    const secondVariables = {
-      characterId: 'character-1',
-      appearanceId: 'appearance-1',
-      imageIndex: 2,
-    }
 
-    const firstContext = await mutation.onMutate(firstVariables)
-    const afterFirst = queryClient.getQueryData<ProjectAssetsData>(assetsKey)
-    expect(afterFirst?.characters[0]?.appearances[0]?.selectedIndex).toBe(1)
+    expect(mutation.onMutate).toBeUndefined()
+    expect(mutation.onError).toBeUndefined()
 
-    const secondContext = await mutation.onMutate(secondVariables)
-    const afterSecond = queryClient.getQueryData<ProjectAssetsData>(assetsKey)
-    expect(afterSecond?.characters[0]?.appearances[0]?.selectedIndex).toBe(2)
+    mutation.onSettled()
 
-    mutation.onError(new Error('first failed'), firstVariables, firstContext)
-    const afterStaleError = queryClient.getQueryData<ProjectAssetsData>(assetsKey)
-    expect(afterStaleError?.characters[0]?.appearances[0]?.selectedIndex).toBe(2)
-
-    mutation.onError(new Error('second failed'), secondVariables, secondContext)
-    const afterLatestRollback = queryClient.getQueryData<ProjectAssetsData>(assetsKey)
-    expect(afterLatestRollback?.characters[0]?.appearances[0]?.selectedIndex).toBe(1)
+    expect(invalidateQueryTemplatesMock).toHaveBeenCalledTimes(1)
+    const [, keys] = invalidateQueryTemplatesMock.mock.calls[0] as [unknown, unknown[]]
+    expect(keys).toEqual(expect.arrayContaining([
+      queryKeys.projectAssets.all(projectId),
+      queryKeys.projectData(projectId),
+    ]))
   })
 
   it('optimistically deletes project character and restores on error', async () => {
