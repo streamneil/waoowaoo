@@ -238,11 +238,7 @@ export function useSelectCharacterImage() {
       if (latestRequestId !== context.requestId) return
       restoreCharacterQuerySnapshots(queryClient, context.previousQueries)
     },
-    onSettled: (_data, _error, variables) => {
-      if (variables.confirm) {
-        void invalidateCharacters()
-      }
-    },
+    onSettled: invalidateCharacters,
   })
 }
 
