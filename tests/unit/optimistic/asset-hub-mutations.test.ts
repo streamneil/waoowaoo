@@ -31,13 +31,17 @@ vi.mock('@/lib/query/mutations/mutation-shared', async () => {
   }
 })
 
+const { invalidateGlobalCharactersMock } = vi.hoisted(() => ({
+  invalidateGlobalCharactersMock: vi.fn(),
+}))
+
 vi.mock('@/lib/query/mutations/asset-hub-mutations-shared', async () => {
   const actual = await vi.importActual<typeof import('@/lib/query/mutations/asset-hub-mutations-shared')>(
     '@/lib/query/mutations/asset-hub-mutations-shared',
   )
   return {
     ...actual,
-    invalidateGlobalCharacters: vi.fn(),
+    invalidateGlobalCharacters: (...args: unknown[]) => invalidateGlobalCharactersMock(...args),
     invalidateGlobalLocations: vi.fn(),
   }
 })
@@ -54,6 +58,7 @@ interface SelectCharacterMutation {
     imageIndex: number | null
   }) => Promise<unknown>
   onError: (error: unknown, variables: unknown, context: unknown) => void
+  onSettled: (data: unknown, error: unknown, variables: { confirm?: boolean }) => void
 }
 
 interface DeleteLocationMutation {
@@ -108,6 +113,21 @@ describe('asset hub optimistic mutations', () => {
     queryClient = new MockQueryClient()
     useQueryClientMock.mockClear()
     useMutationMock.mockClear()
+    invalidateGlobalCharactersMock.mockClear()
+  })
+
+  // 资产中心列表由 useAssets 渲染（订阅 unified 子键），旧的乐观更新写到
+  // globalAssets.characters() 刷不到渲染缓存，且 onSettled 曾被 if (confirm) 守卫，
+  // 选择(confirm:false)时既不刷新也看不到切换，必须 command+R 重挂载。同 a08a226。
+  // 现契约：onSettled 无条件 invalidate（invalidateGlobalCharacters 已带上 unified 键）。
+  it('invalidates character caches on settle regardless of confirm', () => {
+    const mutation = useSelectCharacterImage() as unknown as SelectCharacterMutation
+
+    mutation.onSettled(undefined, null, { confirm: false })
+    expect(invalidateGlobalCharactersMock).toHaveBeenCalledTimes(1)
+
+    mutation.onSettled(undefined, null, { confirm: true })
+    expect(invalidateGlobalCharactersMock).toHaveBeenCalledTimes(2)
   })
 
   it('updates all character query caches optimistically and ignores stale rollback', async () => {

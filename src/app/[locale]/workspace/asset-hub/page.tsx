@@ -223,14 +223,12 @@ export default function AssetHubPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     characterId: voiceDesignCharacter.id,
-                    voiceId,
-                    audioBase64
+                    voiceDesign: { voiceId, audioBase64 }
                 })
             })
 
             if (res.ok) {
                 alert(t('voiceDesignSaved', { name: voiceDesignCharacter.name }))
-                queryClient.invalidateQueries({ queryKey: queryKeys.globalAssets.characters() })
                 refreshAssets()
             } else {
                 const data = await res.json()
